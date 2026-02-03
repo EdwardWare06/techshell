@@ -211,12 +211,20 @@ static void execute_pipeline(char **args, int background) {
                 close(fd[1]);
             }
 
+            for (int j = 0; args[j] != NULL; j++) {
+                if (strcmp(args[j], "|") == 0) {
+                    args[j] = NULL;
+                    break;
+                }
+            }
+
             handle_redirection(args);
             execvp(args[0], args);
 
-            fprintf(stderr, "Error %d (%s)\n", errno, strerror(errno));
+            perror("execvp");
             _exit(1);
         }
+
 
         if (in_fd != STDIN_FILENO) {
             close(in_fd);
