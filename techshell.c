@@ -16,6 +16,8 @@ This supports:
  The code is written to compile cleanly with:
   gcc -std=c11 -Wall -Wextra -Werror -pedantic
 */
+#define _POSIX_C_SOURCE 200809L // POSIX compliance for getline, etc.
+
 #include <stdio.h>      // printf, fgets, perror
 #include <unistd.h>     // fork, execvp, chdir, dup2, getcwd
 #include <string.h>     // strtok, strcmp, strerror
@@ -60,6 +62,9 @@ static void add_history(const char *line);
 static void print_history(void);
 
 
+// Global variables
+static volatile sig_atomic_t sigint_received = 0;
+
 // Main shell loop
 
 int main(void) {
@@ -68,15 +73,30 @@ int main(void) {
     int background = 0;
 
     // Ignore SIGINT in the shell itself
-    signal(SIGINT, sigint_handler);
+    struct sigaction sa;
+    sa.sa_handler = sigint_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sigaction(SIGINT, &sa, NULL);
+
 
     while (1) {
         print_prompt();
 
+        sigint_received = 0;
+
         if (fgets(line, sizeof(line), stdin) == NULL) {
-            printf("\n");
-            break;
+
+        if (sigint_received) {
+            write(STDOUT_FILENO, "\n", 1);
+            continue;   // back to prompt
         }
+
+        // EOF (Ctrl+D)
+        printf("\n");
+        break;
+        }
+
 
         // Strip trailing newline
         line[strcspn(line, "\n")] = '\0';
@@ -271,7 +291,7 @@ static int count_pipes(char **args) {
 
 static void sigint_handler(int signo) {
     (void)signo;
-    write(STDOUT_FILENO, "\n", 1);
+    sigint_received = 1;
 }
 
 
