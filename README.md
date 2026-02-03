@@ -9,8 +9,15 @@ It supports command execution, directory navigation, I/O redirection,
 pipes, background execution, and detailed error handling.
 
 ## Build Instructions
-```bash
 
-cd techshell
-make
-./techshell
+1. Navigate to the project directory:
+    cd "Bash Shell Project"
+
+2. Compile the source code:
+    gcc -std=c11 -Wall -Wextra -o techshell
+
+3. Run the shell:
+    ./techshell
+
+4. (Optional) To clean build artifacts:
+    rm -f techshell *.o
