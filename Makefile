@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -std=c11 -Wall -Wextra -Werror -pedantic
-TARGET = techshell
+TARGET = techshell.o
 
 # Build all targets (default target)
 all: $(TARGET)
