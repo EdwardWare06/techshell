@@ -1,7 +1,9 @@
 # TechShell
 
-## Group Member
+## Group Members
 Edward Ware
+Cole Pellegrin
+Carter Landry
 
 ## Description
 TechShell is a Unix-like shell written in C (specifically the C11 standard) using POSIX system calls.
